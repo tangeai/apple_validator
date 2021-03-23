@@ -20,7 +20,7 @@ func (v *Validator) CheckIdentityToken(token string) (JWTToken, error) {
 	if err != nil {
 		return nil, err
 	}
-	key, err := fetchKeysFromApple(appleToken.header.Kid)
+	key, err := v.fetchKeysFromApple(appleToken.header.Kid)
 	if err != nil {
 		return nil, err
 	}
@@ -89,8 +89,15 @@ func parseToken(token string) (*appleToken, error) {
 	return apToken, nil
 }
 
-func fetchKeysFromApple(kid string) (*appleKey, error) {
-	rsp, err := http.Get("https://appleid.apple.com/auth/keys")
+func (v *Validator)fetchKeysFromApple(kid string) (*appleKey, error) {
+	var rsp *http.Response
+	var err error
+	url := "https://appleid.apple.com/auth/keys"
+	if v.client == nil {
+		rsp, err = http.Get(url)
+	} else {
+		rsp, err = v.client.Get(url)
+	}
 	if err != nil {
 		return nil, err
 	}

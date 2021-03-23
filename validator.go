@@ -1,9 +1,15 @@
 package apple_validator
 
+import (
+	"net/http"
+	"net/url"
+)
+
 type Validator struct {
 	clientID     string //App ID
 	clientSecret string //client secret
 	redirectUri  string
+	client  *http.Client
 }
 
 func NewValidator(options ...Options) *Validator {
@@ -31,5 +37,17 @@ func WithClientSecret(secret string) Options {
 func WithRedirectUri(uri string) Options {
 	return func(p *Validator) {
 		p.redirectUri = uri
+	}
+}
+
+func WithProxy(addr string) Options {
+	return func(p *Validator) {
+		p.client = &http.Client{
+			Transport:     &http.Transport{
+				Proxy:func(r *http.Request)(*url.URL, error) {
+					return url.Parse(addr)
+				},
+			},
+		}
 	}
 }
