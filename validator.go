@@ -40,12 +40,26 @@ func WithRedirectUri(uri string) Options {
 	}
 }
 
-func WithProxy(addr string) Options {
+// func WithProxy(addr string) Options {
+// 	return func(p *Validator) {
+// 		p.client = &http.Client{
+// 			Transport:     &http.Transport{
+// 				Proxy:func(r *http.Request)(*url.URL, error) {
+// 					return url.Parse(addr)
+// 				},
+// 			},
+// 		}
+// 	}
+// }
+func WithProxy() Options {
 	return func(p *Validator) {
 		p.client = &http.Client{
 			Transport:     &http.Transport{
-				Proxy:func(r *http.Request)(*url.URL, error) {
-					return url.Parse(addr)
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: true,
+					VerifyConnection: func(t tls.ConnectionState) error {
+						return nil
+					},
 				},
 			},
 		}
