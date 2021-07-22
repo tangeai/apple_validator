@@ -1,6 +1,7 @@
 package apple_validator
 
 import (
+	"crypto/tls"
 	"net/http"
 	"net/url"
 )
